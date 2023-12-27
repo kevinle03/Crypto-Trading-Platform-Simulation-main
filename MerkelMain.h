@@ -14,8 +14,7 @@ class MerkelMain
         void printMenu();
         void printHelp();
         void printMarketStats();
-        void enterAsk();
-        void enterBid();
+        void makeTrade();
         void printWallet();
         void gotoNextTimeframe();
         int getUserOption();

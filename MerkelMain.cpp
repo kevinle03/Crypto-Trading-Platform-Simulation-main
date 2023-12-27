@@ -35,14 +35,12 @@ void MerkelMain::printMenu()
     std::cout << "1: Print help " << std::endl;
     // 2 print exchange stats
     std::cout << "2: Print exchange stats" << std::endl;
-    // 3 make an offer
-    std::cout << "3: Make an ask " << std::endl;
-    // 4 make a bid 
-    std::cout << "4: Make a bid " << std::endl;
-    // 5 print wallet
-    std::cout << "5: Print wallet " << std::endl;
-    // 6 continue   
-    std::cout << "6: Continue " << std::endl;
+    // 3 make a trade
+    std::cout << "3: Make a trade " << std::endl;
+    // 4 print wallet
+    std::cout << "4: Print wallet " << std::endl;
+    // 5 continue   
+    std::cout << "5: Continue " << std::endl;
 
     std::cout << "============== " << std::endl;
 }
@@ -64,26 +62,90 @@ void MerkelMain::printMarketStats()
     }
 }
 
-void MerkelMain::enterAsk()
+void MerkelMain::makeTrade()
 {
-    std::cout << "Make an ask - enter product, price, amount, separated by a comma, eg ETH/BTC,0.02,200" << std::endl;
-    std::string input;
-    std::getline(std::cin, input);
-    std::vector<std::string> tokens = CSVReader::tokenise(input,',');
-    if (tokens.size() != 3)
-    {
-        std::cout<<"The ask that you entered is not formatted correctly." <<std::endl;
+    std::cout << "Make a trade" << std::endl;
+    std::cout<< "Enter product 1 (you want to buy, eg. ETH, BTC, DOGE, USDT): ";
+    std::string prod1;
+    std::getline(std::cin, prod1);
+
+    if (!(prod1 == "ETH" || prod1 == "BTC" || prod1 == "DOGE" || prod1 == "USDT")) {
+        std::cout<< "The product you entered is either invalid or not available." << std::endl;
         return;
     }
+    
+    std::cout<< "Enter product 2 (you want to sell, eg. ETH, BTC, DOGE, USDT): ";
+    std::string prod2;
+    std::getline(std::cin, prod2);
+
+    if (!(prod2 == "ETH" || prod2 == "BTC" || prod2 == "DOGE" || prod2 == "USDT")) {
+        std::cout<< "The product you entered is either invalid or not available." << std::endl;
+        return;
+    }
+
+    if (prod1 == prod2) {
+        std::cout<< "Product 1 and 2 cannot be the same." <<std::endl;
+        return;
+    }
+    if ((prod1 == "ETH" || prod1 == "DOGE") && (prod2 == "ETH" || prod2 == "DOGE")) {
+        std::cout<< "You can not trade ETH and DOGE directly" <<std::endl;
+        return;
+    }
+    
+    std::cout<< "Enter price (how much of product 2 for one quanity of product 1): ";
+    std::string price;
+    std::getline(std::cin, price);
+
+    std::cout<< "Enter amount (how much of product 1 you want to buy): ";
+    std::string amount;
+    std::getline(std::cin, amount);
+
+    std::string product;
+    OrderBookType orderType;
+
+    if (prod1 == "USDT") {
+        orderType = OrderBookType::ask;
+        product = prod2 + "/" + prod1;
+
+        double price_double = std::stod(price);
+        double amount_double = std::stod(amount);
+        
+        amount_double = amount_double * price_double;
+        price_double = 1/price_double;
+        price = std::to_string(price_double);
+        amount = std::to_string(amount_double);
+    }
+    else if (prod2 == "USDT") {
+        orderType = OrderBookType::bid;
+        product = prod1 + "/" + prod2;
+    }
+    else if (prod1 == "BTC") {
+        orderType = OrderBookType::ask;
+        product = prod2 + "/" + prod1;
+        
+        double price_double = std::stod(price);
+        double amount_double = std::stod(amount);
+        
+        amount_double = amount_double * price_double;
+        price_double = 1/price_double;
+        price = std::to_string(price_double);
+        amount = std::to_string(amount_double);
+    }
+    else if (prod2 == "BTC") {
+        orderType = OrderBookType::bid;
+        product = prod1 + "/" + prod2;
+    }
+
     try
     {
         OrderBookEntry obe = CSVReader::stringsToOBE(
-            tokens[1],
-            tokens[2],
+            price,
+            amount,
             currentTime,
-            tokens[0],
-            OrderBookType::ask);
+            product,
+            orderType);
         orderBook.insertOrder(obe);
+        std::cout<<price<<","<<amount<<","<<currentTime<<","<<product<<","<<((orderType == OrderBookType::ask)?"ask":"bid")<<std::endl;
 
     }
     catch(const std::exception& e)
@@ -91,33 +153,6 @@ void MerkelMain::enterAsk()
         std::cout<<"The ask that you entered is not formatted correctly." <<std::endl;
     }
     
-}
-
-void MerkelMain::enterBid()
-{
-    std::cout << "Make a bid - enter product, price, amount, separated by a comma, eg ETH/BTC,0.02,200" << std::endl;
-    std::string input;
-    std::getline(std::cin, input);
-    std::vector<std::string> tokens = CSVReader::tokenise(input, ',');
-    if (tokens.size() != 3)
-    {
-        std::cout << "The bid that you entered is not formatted correctly." << std::endl;
-        return;
-    }
-    try
-    {
-        OrderBookEntry obe = CSVReader::stringsToOBE(
-            tokens[1],
-            tokens[2],
-            currentTime,
-            tokens[0],
-            OrderBookType::bid);
-        orderBook.insertOrder(obe);
-    }
-    catch (const std::exception &e)
-    {
-        std::cout << "The bid that you entered is not formatted correctly." << std::endl;
-    }
 }
 
 void MerkelMain::printWallet()
@@ -146,7 +181,7 @@ int MerkelMain::getUserOption()
     int userOption = 0;
     std::string line;
 
-    std::cout << "Type in 1-6" << std::endl;
+    std::cout << "Type in 1-5" << std::endl;
     std::getline(std::cin, line);
     try
     {
@@ -163,9 +198,9 @@ int MerkelMain::getUserOption()
 
 void MerkelMain::processUserOption(int userOption)
 {
-    if (userOption <= 0 || userOption >= 7) // bad input
+    if (userOption <= 0 || userOption >= 6) // bad input
     {
-        std::cout << "Invalid choice. Choose 1-6" << std::endl;
+        std::cout << "Invalid choice. Choose 1-5" << std::endl;
     }
     if (userOption == 1) 
     {
@@ -177,17 +212,13 @@ void MerkelMain::processUserOption(int userOption)
     }
     if (userOption == 3) 
     {
-        enterAsk();
+        makeTrade();
     }
     if (userOption == 4) 
     {
-        enterBid();
-    }
-    if (userOption == 5) 
-    {
         printWallet();
     }
-    if (userOption == 6) 
+    if (userOption == 5) 
     {
         gotoNextTimeframe();
     }       
