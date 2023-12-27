@@ -62,27 +62,11 @@ void MerkelMain::printMarketStats()
         std::cout << "Max ask: " << OrderBook::getHighPrice(entries) << std::endl;
         std::cout << "Min ask: " << OrderBook::getLowPrice(entries) << std::endl;
     }
-
-    // std::cout << "OrderBook contains :  " << orders.size() << " entries" << std::endl;
-    // unsigned int bids = 0;
-    // unsigned int asks = 0;
-    // for (OrderBookEntry& e : orders)
-    // {
-    //     if (e.orderType == OrderBookType::ask)
-    //     {
-    //         asks ++;
-    //     }
-    //     if (e.orderType == OrderBookType::bid)
-    //     {
-    //         bids ++;
-    //     }  
-    // }    
-    // std::cout << "OrderBook asks:  " << asks << " bids:" << bids << std::endl;
 }
 
 void MerkelMain::enterAsk()
 {
-    std::cout << "Make an ask - enter product, price, amount, separated by a comma, eg ETH/BTC,200,0.5" << std::endl;
+    std::cout << "Make an ask - enter product, price, amount, separated by a comma, eg ETH/BTC,0.02,200" << std::endl;
     std::string input;
     std::getline(std::cin, input);
     std::vector<std::string> tokens = CSVReader::tokenise(input,',');
@@ -111,7 +95,7 @@ void MerkelMain::enterAsk()
 
 void MerkelMain::enterBid()
 {
-    std::cout << "Make a bid - enter product, price, amount, separated by a comma, eg ETH/BTC,200,0.5" << std::endl;
+    std::cout << "Make a bid - enter product, price, amount, separated by a comma, eg ETH/BTC,0.02,200" << std::endl;
     std::string input;
     std::getline(std::cin, input);
     std::vector<std::string> tokens = CSVReader::tokenise(input, ',');
