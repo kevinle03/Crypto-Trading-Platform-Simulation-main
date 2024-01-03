@@ -19,4 +19,5 @@ class Wallet
 
     private:
         std::map<std::string, double> currencies;
+        std::map<std::string, double> pending_currencies;
 };

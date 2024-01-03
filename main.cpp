@@ -9,9 +9,6 @@
 
 int main()
 {
-    Wallet wallet{};
-    wallet.insertCurrency("BTC", 10);
-
     MerkelMain start{};
     start.init();
 }
