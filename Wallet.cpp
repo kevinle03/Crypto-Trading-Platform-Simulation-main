@@ -45,14 +45,38 @@ bool Wallet::containsCurrency(std::string type, double amount)
 
 std::string Wallet::toString()
 {
-    if (currencies.size() == 0)
-        return "Your wallet is empty.";
     std::string s;
+
+    s += "Currencies:\n";
+    if (currencies.size() == 0)
+        s += "Your currencies wallet is empty.\n";
+
     for (std::pair<std::string, double> pair : currencies)
     {
         s += pair.first + ": " + std::to_string(pair.second) + "\n";
     }
+
+    s += "\nPending Currencies:\n";
+    if (pending_currencies.size() == 0)
+        s += "You have no coins on hold.\n";
+    for (std::pair<std::string, double> pair : pending_currencies)
+    {
+        s += pair.first + ": " + std::to_string(pair.second) + "\n";
+    }
+
+    s += "\nPending orders:\n";
+    if (pending_order.size() == 0)
+        s += "You have no pending orders.\n";
+    for (std::string order : pending_order)
+    {
+        s += order + "\n";
+    }
     return s;
+}
+
+void Wallet::insertPendingOrder(std::string order)
+{
+    pending_order.push_back(order);
 }
 
 std::ostream& operator<<(std::ostream& os, Wallet& wallet)
