@@ -151,7 +151,12 @@ void MerkelMain::makeTrade()
             product,
             orderType);
         orderBook.insertOrder(obe);
-        std::cout<<price<<","<<amount<<","<<currentTime<<","<<product<<","<<((orderType == OrderBookType::ask)?"ask":"bid")<<std::endl;
+
+        wallet.removeCurrency(prod2, price_double*amount_double);
+        wallet.insertPendingCurrency(prod2, price_double*amount_double);
+
+        std::string order = price+","+amount+","+currentTime+","+product+","+((orderType == OrderBookType::ask)?"ask":"bid");
+        wallet.insertPendingOrder(order);
 
     }
     catch(const std::exception& e)
@@ -179,6 +184,7 @@ void MerkelMain::gotoNextTimeframe()
             std::cout << "Sale price: " << sale.price << ", Amount: " <<sale.amount << std::endl;
         }
     }
+    wallet.clearPendingOrder();
     currentTime = orderBook.getNextTime(currentTime);
 }
  

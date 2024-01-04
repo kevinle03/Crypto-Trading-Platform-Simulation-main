@@ -30,6 +30,26 @@ bool Wallet::removeCurrency(std::string type, double amount)
     return false;
 }
 
+void Wallet::insertPendingCurrency(std::string type, double amount)
+{
+    if (amount < 0)
+    {
+        throw std::invalid_argument("Amount must be positive");
+    }
+    if (pending_currencies.count(type) == 0)
+    {
+        pending_currencies[type] = 0;
+    }
+
+    pending_currencies[type] += amount;
+}
+
+void Wallet::removePendingCurrency(std::string type, double amount)
+{
+    pending_currencies[type] -= amount;
+}
+
+
 bool Wallet::containsCurrency(std::string type, double amount)
 {
     if (amount < 0)
@@ -77,6 +97,10 @@ std::string Wallet::toString()
 void Wallet::insertPendingOrder(std::string order)
 {
     pending_order.push_back(order);
+}
+
+void Wallet::clearPendingOrder() {
+    pending_order.clear();
 }
 
 std::ostream& operator<<(std::ostream& os, Wallet& wallet)
