@@ -22,9 +22,9 @@ std::vector<OrderBookEntry> CSVReader::readCSV(std::string csvFilename)
                 entries.push_back(obe);
             }catch(const std::exception& e)
             {
-                //std::cout << "CSVReader::readCSV bad data"  << std::endl;
+                std::cout << "CSVReader::readCSV bad data"  << std::endl;
             }
-        }// end of while
+        }
     }    
 
     std::cout << "CSVReader::readCSV read " << entries.size() << " entries"  << std::endl;
@@ -44,7 +44,7 @@ std::vector<std::string> CSVReader::tokenise(std::string csvLine, char separator
         else token = csvLine.substr(start, csvLine.length() - start);
         tokens.push_back(token);
         start = end + 1;
-    }while(end != std::string::npos); // slight change from the video. Video checks for > 0, here std::string::npos
+    }while(end != std::string::npos); // slight change from the video. Video checks for > 0, here std::string::npos (actual value is -1, means end of string)
 
    return tokens; 
 }
