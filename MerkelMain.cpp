@@ -73,77 +73,86 @@ void MerkelMain::printMarketStats()
 
 void MerkelMain::makeTrade()
 {
-    std::cout << "Make a trade" << std::endl;
-    std::cout<< "Enter product 1 (you want to buy, eg. ETH, BTC, DOGE, USDT): ";
-    std::string prod1;
-    std::getline(std::cin, prod1);
-
-    if (!(prod1 == "ETH" || prod1 == "BTC" || prod1 == "DOGE" || prod1 == "USDT")) {
-        std::cout<< "The product you entered is either invalid or not available." << std::endl;
-        return;
-    }
-    
-    std::cout<< "Enter product 2 (you want to sell, eg. ETH, BTC, DOGE, USDT): ";
-    std::string prod2;
-    std::getline(std::cin, prod2);
-
-    if (!(prod2 == "ETH" || prod2 == "BTC" || prod2 == "DOGE" || prod2 == "USDT")) {
-        std::cout<< "The product you entered is either invalid or not available." << std::endl;
-        return;
-    }
-
-    if (prod1 == prod2) {
-        std::cout<< "Product 1 and 2 cannot be the same." <<std::endl;
-        return;
-    }
-    if ((prod1 == "ETH" || prod1 == "DOGE") && (prod2 == "ETH" || prod2 == "DOGE")) {
-        std::cout<< "You can not trade ETH and DOGE directly" <<std::endl;
-        return;
-    }
-
-    if (!(wallet.containsCurrency(prod2,0))) {
-        std::cout<<"You have 0 " << prod2 << " in your wallet." <<std::endl;
-        return;
-    }
-    
-    std::cout<< "Enter price (how much of product 2 for one quanity of product 1): ";
-    std::string price;
-    std::getline(std::cin, price);
-
-    std::cout<< "Enter amount (how much of product 1 you want to buy): ";
-    std::string amount;
-    std::getline(std::cin, amount);
-
-    double price_double = std::stod(price);
-    double amount_double = std::stod(amount);
-
-    if (!(wallet.containsCurrency(prod2,(price_double*amount_double)))) {
-        std::cout << "You do not have enough " << prod2 << "." <<std::endl;
-        return;
-    }
-
-    std::string product;
-    OrderBookType orderType;
-
-    if (prod1 == "USDT" || prod1 == "BTC") {
-        if (!(prod2 == "USDT")) {
-            orderType = OrderBookType::ask;
-            product = prod2 + "/" + prod1;
-        
-            double amount_flip = amount_double * price_double;
-            double price_flip = 1/price_double;
-            price = std::to_string(price_flip);
-            amount = std::to_string(amount_flip);
-        }
-    }
-
-    if (!(prod1 == "USDT" || prod1 == "BTC") || prod1 == "BTC" && prod2 == "USDT") {
-        orderType = OrderBookType::bid;
-        product = prod1 + "/" + prod2;
-    }
-
     try
     {
+        std::cout << "Make a trade" << std::endl;
+        std::cout<< "Enter product 1 (you want to buy, eg. ETH, BTC, DOGE, USDT): ";
+        std::string prod1;
+        std::getline(std::cin, prod1);
+
+        if (!(prod1 == "ETH" || prod1 == "BTC" || prod1 == "DOGE" || prod1 == "USDT")) 
+        {
+            std::cout<< "The product you entered is either invalid or not available." << std::endl;
+            return;
+        }
+        
+        std::cout<< "Enter product 2 (you want to sell, eg. ETH, BTC, DOGE, USDT): ";
+        std::string prod2;
+        std::getline(std::cin, prod2);
+
+        if (!(prod2 == "ETH" || prod2 == "BTC" || prod2 == "DOGE" || prod2 == "USDT")) 
+        {
+            std::cout<< "The product you entered is either invalid or not available." << std::endl;
+            return;
+        }
+
+        if (prod1 == prod2) 
+        {
+            std::cout<< "Product 1 and 2 cannot be the same." <<std::endl;
+            return;
+        }
+        if ((prod1 == "ETH" || prod1 == "DOGE") && (prod2 == "ETH" || prod2 == "DOGE")) 
+        {
+            std::cout<< "You can not trade ETH and DOGE directly" <<std::endl;
+            return;
+        }
+
+        if (!(wallet.containsCurrency(prod2,0))) 
+        {
+            std::cout<<"You have 0 " << prod2 << " in your wallet." <<std::endl;
+            return;
+        }
+        
+        std::cout<< "Enter price (how much of product 2 for one quanity of product 1): ";
+        std::string price;
+        std::getline(std::cin, price);
+
+        std::cout<< "Enter amount (how much of product 1 you want to buy): ";
+        std::string amount;
+        std::getline(std::cin, amount);
+
+        double price_double = std::stod(price);
+        double amount_double = std::stod(amount);
+
+        if (!(wallet.containsCurrency(prod2,(price_double*amount_double)))) 
+        {
+            std::cout << "You do not have enough " << prod2 << "." <<std::endl;
+            return;
+        }
+
+        std::string product;
+        OrderBookType orderType;
+
+        if (prod1 == "USDT" || prod1 == "BTC") 
+        {
+            if (!(prod2 == "USDT")) 
+            {
+                orderType = OrderBookType::ask;
+                product = prod2 + "/" + prod1;
+            
+                double amount_flip = amount_double * price_double;
+                double price_flip = 1/price_double;
+                price = std::to_string(price_flip);
+                amount = std::to_string(amount_flip);
+            }
+        }
+
+        if (!(prod1 == "USDT" || prod1 == "BTC") || prod1 == "BTC" && prod2 == "USDT") 
+        {
+            orderType = OrderBookType::bid;
+            product = prod1 + "/" + prod2;
+        }
+        
         OrderBookEntry obe = CSVReader::stringsToOBE(
             price,
             amount,
@@ -185,7 +194,7 @@ void MerkelMain::gotoNextTimeframe()
         }
     }
     wallet.clearPendingOrder();
-    currentTime = orderBook.getNextTime(currentTime);
+    //currentTime = orderBook.getNextTime(currentTime);
 }
  
 int MerkelMain::getUserOption()

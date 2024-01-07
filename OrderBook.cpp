@@ -137,7 +137,6 @@ double OrderBook::getMeanPrice(std::vector<OrderBookEntry>& orders)
 void OrderBook::insertOrder(OrderBookEntry &order)
 {
     orders.push_back(order);
-    std::sort(orders.begin(), orders.end(), OrderBookEntry::compareByTimestamp);
 }
 
 std::vector<OrderBookEntry> OrderBook::matchAsksToBids(std::string product, std::string timestamp)
