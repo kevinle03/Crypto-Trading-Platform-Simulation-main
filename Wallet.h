@@ -2,6 +2,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "OrderBookEntry.h"
 
 class Wallet
 {
@@ -27,7 +28,7 @@ class Wallet
         std::string toString();
 
         /** add a pending order*/
-        void insertPendingOrder(std::string order);
+        void insertPendingOrder(OrderBookEntry order);
 
         /** clear all items in pending orders*/
         void clearPendingOrder();
@@ -37,5 +38,5 @@ class Wallet
     private:
         std::map<std::string, double> currencies;
         std::map<std::string, double> pending_currencies;
-        std::vector<std::string> pending_order;
+        std::vector<OrderBookEntry> pending_order;
 };

@@ -163,9 +163,7 @@ void MerkelMain::makeTrade()
 
         wallet.removeCurrency(prod2, price_double*amount_double);
         wallet.insertPendingCurrency(prod2, price_double*amount_double);
-
-        std::string order = price+","+amount+","+currentTime+","+product+","+((orderType == OrderBookType::ask)?"ask":"bid");
-        wallet.insertPendingOrder(order);
+        wallet.insertPendingOrder(obe);
 
     }
     catch(const std::exception& e)

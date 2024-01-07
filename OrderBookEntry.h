@@ -29,6 +29,11 @@ class OrderBookEntry
             return (*e1).price > (*e2).price;
         }
 
+        std::string toString()
+        {
+            return timestamp + ", " + product + ", " + ((orderType==OrderBookType::ask)?"ask":"bid") + ", " + std::to_string(price) + ", " + std::to_string(amount);
+        }
+
         double price;
         double amount;
         std::string timestamp;

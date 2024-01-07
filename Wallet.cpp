@@ -71,7 +71,7 @@ std::string Wallet::toString()
     if (currencies.size() == 0)
         s += "Your currencies wallet is empty.\n";
 
-    for (std::pair<std::string, double> pair : currencies)
+    for (const std::pair<std::string, double>& pair : currencies)
     {
         s += pair.first + ": " + std::to_string(pair.second) + "\n";
     }
@@ -79,7 +79,7 @@ std::string Wallet::toString()
     s += "\nPending Currencies:\n";
     if (pending_currencies.size() == 0)
         s += "You have no coins on hold.\n";
-    for (std::pair<std::string, double> pair : pending_currencies)
+    for (const std::pair<std::string, double>& pair : pending_currencies)
     {
         s += pair.first + ": " + std::to_string(pair.second) + "\n";
     }
@@ -87,14 +87,14 @@ std::string Wallet::toString()
     s += "\nPending orders:\n";
     if (pending_order.size() == 0)
         s += "You have no pending orders.\n";
-    for (std::string order : pending_order)
+    for (OrderBookEntry& order : pending_order)
     {
-        s += order + "\n";
+        s += order.toString() + "\n";
     }
     return s;
 }
 
-void Wallet::insertPendingOrder(std::string order)
+void Wallet::insertPendingOrder(OrderBookEntry order)
 {
     pending_order.push_back(order);
 }
