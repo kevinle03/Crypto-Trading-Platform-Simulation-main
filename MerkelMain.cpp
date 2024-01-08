@@ -13,7 +13,7 @@ MerkelMain::MerkelMain()
 
 void MerkelMain::init()
 {
-    wallet.insertCurrency("USDT", 30000);
+    wallet.insertCurrency("USDT", 100000);
     currentTime = orderBook.getEarliestTime();
     int input;
     while(true)
