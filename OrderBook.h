@@ -3,6 +3,7 @@
 #include "CSVReader.h"
 #include <string>
 #include <vector>
+#include "Wallet.h"
 
 class OrderBook
 {
@@ -21,7 +22,7 @@ class OrderBook
     /** return vector of Orders according to the sent filters*/
     std::vector<OrderBookEntry> getOrders(OrderBookType type,
                                           std::string product,
-                                          std::string timestamp);
+                                          std::string timestamp);                                 
 
     std::string getEarliestTime();  
 
@@ -37,7 +38,7 @@ class OrderBook
 
     void insertOrder(OrderBookEntry& order);
 
-    std::vector<OrderBookEntry> matchAsksToBids(std::string product, std::string timestamp);
+    std::vector<OrderBookEntry> matchAsksToBids(std::string product, std::string timestamp, Wallet& wallet);
 
     private:
         std::vector<OrderBookEntry> orders;                           

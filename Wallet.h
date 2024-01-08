@@ -35,8 +35,9 @@ class Wallet
 
         friend std::ostream& operator<<(std::ostream& os, Wallet& wallet);
 
+        std::vector<OrderBookEntry> pending_order;
+        std::map<std::string, double> pending_currencies;
+
     private:
         std::map<std::string, double> currencies;
-        std::map<std::string, double> pending_currencies;
-        std::vector<OrderBookEntry> pending_order;
 };

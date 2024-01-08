@@ -33,7 +33,8 @@ std::vector<OrderBookEntry*> OrderBook::getOrdersPointers(OrderBookType type,
     {
         if (type == e.orderType &&
             product == e.product &&
-            timestamp == e.timestamp)
+            timestamp == e.timestamp &&
+            e.amount > 0)
         {
             matchingOrders.push_back(&e);
         }
@@ -51,14 +52,15 @@ std::vector<OrderBookEntry> OrderBook::getOrders(OrderBookType type,
     {
         if (type == e.orderType &&
             product == e.product &&
-            timestamp == e.timestamp)
+            timestamp == e.timestamp &&
+            e.amount > 0)
         {
             matchingOrders.push_back(e);
         }
     }
 
     return matchingOrders;
-}    
+}                                           
 
 std::string OrderBook::getEarliestTime()
 {
@@ -139,17 +141,22 @@ void OrderBook::insertOrder(OrderBookEntry &order)
     orders.push_back(order);
 }
 
-std::vector<OrderBookEntry> OrderBook::matchAsksToBids(std::string product, std::string timestamp)
+std::vector<OrderBookEntry> OrderBook::matchAsksToBids(std::string product, std::string timestamp, Wallet& wallet)
 {
     std::vector<OrderBookEntry*> asks = getOrdersPointers(OrderBookType::ask, product, timestamp);
     std::vector<OrderBookEntry*> bids = getOrdersPointers(OrderBookType::bid, product, timestamp);
     std::vector<OrderBookEntry> sales;
     std::sort(asks.begin(), asks.end(), OrderBookEntry::compareByPriceAsc);
     std::sort(bids.begin(), bids.end(), OrderBookEntry::compareByPriceDesc);
+
     for (OrderBookEntry* ask : asks)
     {
+        if (ask == nullptr || (*ask).amount == 0)
+            continue;
         for (OrderBookEntry* bid : bids)
         {
+            if (bid == nullptr || (*bid).amount == 0)
+                continue;
             if ((*bid).price >= (*ask).price)
             {
                 OrderBookEntry sale{(*ask).price, 0, timestamp, product, OrderBookType::sale};
@@ -158,6 +165,7 @@ std::vector<OrderBookEntry> OrderBook::matchAsksToBids(std::string product, std:
                     sale.amount = (*ask).amount;
                     sales.push_back(sale);
                     (*bid).amount = 0;
+                    (*ask).amount = 0;
                     break;
                 }
                 if ((*bid).amount > (*ask).amount)
@@ -165,6 +173,7 @@ std::vector<OrderBookEntry> OrderBook::matchAsksToBids(std::string product, std:
                     sale.amount = (*ask).amount;
                     sales.push_back(sale);
                     (*bid).amount = (*bid).amount - (*ask).amount;
+                    (*ask).amount = 0;
                     break;
                 }
                 if ((*bid).amount < (*ask).amount)
@@ -178,5 +187,35 @@ std::vector<OrderBookEntry> OrderBook::matchAsksToBids(std::string product, std:
             }
         }
     }
+
+    for (const OrderBookEntry& pending : wallet.pending_order)
+    {
+        if (pending.product == product)
+        {
+            if (pending.orderType == OrderBookType::ask)
+            {
+                std::string sell = CSVReader::productToCoin(pending.product,1);
+                std::string buy = CSVReader::productToCoin(pending.product,2);
+                double total_amount = 0;
+                for (const OrderBookEntry& s : sales)
+                {
+                    total_amount += s.amount;
+                }
+                wallet.removePendingCurrency(sell, total_amount);
+                wallet.insertCurrency(buy,total_amount*pending.price);
+            }
+            else
+            {
+                std::string buy = CSVReader::productToCoin(pending.product,1);
+                std::string sell = CSVReader::productToCoin(pending.product,2);
+                for (const OrderBookEntry& s : sales)
+                {
+                    wallet.removePendingCurrency(sell, s.amount * s.price);
+                    wallet.insertCurrency(buy,s.amount);
+                }
+            }
+        }
+    }
+
     return sales;
 }

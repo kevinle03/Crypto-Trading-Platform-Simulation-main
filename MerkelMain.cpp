@@ -13,9 +13,7 @@ MerkelMain::MerkelMain()
 
 void MerkelMain::init()
 {
-    wallet.insertCurrency("BTC", 10);
-    wallet.insertCurrency("USDT", 15000);
-    wallet.insertCurrency("ETH", 30);
+    wallet.insertCurrency("USDT", 30000);
     currentTime = orderBook.getEarliestTime();
     int input;
     while(true)
@@ -152,6 +150,16 @@ void MerkelMain::makeTrade()
             orderType = OrderBookType::bid;
             product = prod1 + "/" + prod2;
         }
+
+        for (const OrderBookEntry& pending : wallet.pending_order)
+        {
+            if (pending.product == product)
+            {
+                std::cout << "Could not submit your order. You already have a pending trade between " << prod1 << " and " << prod2 << "." <<std::endl;
+                return;
+            }
+        }
+        
         
         OrderBookEntry obe = CSVReader::stringsToOBE(
             price,
@@ -184,15 +192,23 @@ void MerkelMain::gotoNextTimeframe()
     for (std::string& p : orderBook.getKnownProducts())
     {
         std::cout << "matching " << p << std::endl;
-        std::vector<OrderBookEntry> sales = orderBook.matchAsksToBids(p, currentTime);
+        std::vector<OrderBookEntry> sales = orderBook.matchAsksToBids(p, currentTime, wallet);
         std::cout << "Sales: " << sales.size() <<std::endl;
         for (OrderBookEntry& sale : sales)
         {
             std::cout << "Sale price: " << sale.price << ", Amount: " <<sale.amount << std::endl;
         }
     }
+
+    for (std::pair<std::string, double> pair : wallet.pending_currencies)
+    {
+        wallet.insertCurrency(pair.first, pair.second);
+    }
+
+    wallet.pending_currencies.clear();
+
     wallet.clearPendingOrder();
-    //currentTime = orderBook.getNextTime(currentTime);
+    currentTime = orderBook.getNextTime(currentTime);
 }
  
 int MerkelMain::getUserOption()

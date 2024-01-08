@@ -16,6 +16,7 @@ class CSVReader
                                            std::string timestamp,
                                            std::string product,
                                            OrderBookType OrderBookType);
+        static std::string productToCoin(std::string product, int p);
 
     private:
         static OrderBookEntry stringsToOBE(std::vector<std::string> strings);

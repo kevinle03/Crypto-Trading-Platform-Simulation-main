@@ -102,4 +102,13 @@ OrderBookEntry CSVReader::stringsToOBE(std::vector<std::string> tokens)
 
     return obe; 
 }
-      
+
+std::string CSVReader::productToCoin(std::string product, int p)
+{
+    int separator = product.find("/");
+    if (p == 1)
+    {
+        return product.substr(0,separator);
+    }
+    return product.substr(separator+1);
+}
