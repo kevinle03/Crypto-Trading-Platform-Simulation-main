@@ -1,4 +1,5 @@
 Author: Kevin Le
+
 This project is part of the Object Oriented Programming Specialization (5 course series) on Coursera, taught by Dr. Matthew Yee-King.
 This program was developed as I worked through the courses, but I have decided to take my own approach on certain aspects and ended up diverging from the course and completing the project on my own.
 
